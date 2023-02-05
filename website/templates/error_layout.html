@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} page not found {% endblock %}</title>
+    <link rel="stylesheet" href="/static/errors.css">
+</head>
+<body>
+<div id="main">
+    	<div class="fof">
+          {% block content %}
+            <h1>Page not found</h1>
+            <p>What you were looking for is just not there</p>
+          {% endblock %}
+        {% block footer %}
+            <p><a href="{{ url_for('views.home') }}">Go somewhere nice instead</a></p>
+        {% endblock %}
+    	</div>
+</div>
+</body>
+</html>

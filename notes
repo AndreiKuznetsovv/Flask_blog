@@ -1,0 +1,14 @@
+in this application we're using factory pattern:
+https://flask.palletsprojects.com/en/1.1.x/patterns/appfactories/#app-factories
+
+
+
+goals:
+    0) MAKE ABOUT PAGE
+    1) make a dark theme
+    2) password resset - send code to email
+    3) add WTForms for validation............................DONE
+    4) make profile page with default image and option to change it
+    5) Move "Create Post" button to Sidebar!!!
+    6) Authentication via Social networks
+    7) ...

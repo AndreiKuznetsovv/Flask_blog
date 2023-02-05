@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% for post in posts.items %}
+<article class="media content-section">
+    <img class="rounded-circle article-img"
+         src="{{ url_for('static', filename='profile_pics/' + post.user_info.image) }}">
+    <div class="media-body border-dark">
+        <div class="article-metadata ">
+            <a class="mr-2" href="{{ url_for('views.user_posts', username=post.user_info.username) }}">{{
+                post.user_info.username }}</a>
+            <small class="text-muted">{{ post.date_created.strftime('%Y-%m-%d') }}</small>
+            {% if user.id in post.likes|map(attribute="user_id")|list %}
+            {% set icon_class = "fa-solid fa-thumbs-up" %}
+            {% else %}
+            {% set icon_class = "fa-regular fa-thumbs-up" %}
+            {% endif %}
+            <i
+                    class="{{ icon_class }}"
+                    id="like-button-{{post.id}}"
+                    onclick="like({{post.id}})"
+            ></i>
+
+            <span id="likes-count-{{post.id}}">
+                     {{ post.likes|length }}</span>
+            {% if user.id == post.user_id %}
+            <div class="btn-group">
+                <button
+                        type="button"
+                        class="btn btn-sn btn-primary dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                ></button>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('views.edit_post', post_id=post.id) }}" class="dropdown-item">Edit</a></li>
+                    <li><a
+                            href="#deleteModal"
+                            class="dropdown-item"
+                            data-toggle="modal"
+                    >Delete</a></li>
+                </ul>
+                <!-- Modal -->
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <form action="{{ url_for('views.delete_post', post_id=post.id) }}" method="POST">
+                                    <input class="btn btn-danger" type="submit" value="Delete">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end Modal block -->
+            </div>
+            {% endif %}
+        </div>
+        <h2>{{ post.title }}</h2>
+        <div class="card-body">
+            <div class="card-text">{{ post.text }}</div>
+            <br>
+            <div class="collapse" id="comments-{{ post.id }}">
+                <div class="card">
+                    <div class="card-body" id="comments-expended-{{ post.id }}">
+                        {% for comment in post.comments %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="{{ url_for('views.user_posts', username=comment.user_info.username) }}">
+                                    {{ comment.user_info.username }}</a>: {{ comment.text }}
+                            </div>
+                            <div>
+                                <small class="text-muted">{{ comment.date_created.strftime('%Y-%m-%d in %H:%M')
+                                    }}</small>
+                                {% if user.id == comment.user_id or user.id == post.user_id %}
+                                <div class="btn-group">
+                                    <button
+                                            type="button"
+                                            class="btn btn-sn btn-primary dropdown-toggle"
+                                            data-bs-toggle="dropdown"
+                                    ></button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ url_for('views.delete_comment', comment_id=comment.id) }}"
+                                               class="dropdown-item">Delete</a></li>
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <!-- button which showing all comments for post -->
+            <p class="card-text">
+                {% if post.comments|length > 0 %}
+                <!-- inside <a> tag href = id of div which we want to expand -->
+                <a data-bs-toggle="collapse" href="#comments-{{ post.id }}" role="button">
+                    <small>View {{ post.comments|length }} comments</small>
+                </a>
+                {% else %}
+                <small class="text-muted">No comments</small>
+                {% endif %}
+            </p>
+            <!-- comment button -->
+            <form class="input-group mb-3" method="POST"
+                  action="{{ url_for('views.create_comment', post_id=post.id) }}">
+                <input type="text" id="text" name="text" class="form-control" placeholder="Comment something">
+                <button type="submit" class="btn-outline-info mb-8">Comment</button>
+            </form>
+        </div>
+
+        <p class="article-content">{{ post.content }}</p>
+    </div>
+    <!-- here was likes block -->
+</article>
+{% endfor %}
+{% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+{% if page_num %}
+{% if posts.page == page_num %}
+<a class="btn btn-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
+{% else %}
+<a class="btn btn-outline-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
+{% endif %}
+{% else %}
+...
+{% endif %}
+{% endfor %}
+{% endblock content %}
