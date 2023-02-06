@@ -126,7 +126,7 @@ def user_posts(username: str):
 def create_comment(post_id: int):
     if request.method == 'POST':
         text = request.form.get('text')
-
+        # comment 123
         if not text:
             flash('Comment cannot be empty', category='error')
             return redirect(url_for('.home'))
