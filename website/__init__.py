@@ -21,6 +21,11 @@ def create_app():
     # config secret key and database uri
     app.config['SECRET_KEY'] = "dc64a3eed4ff9c9f7ae9e22c8e597654" # got it from secrets.token_hex(16)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dron_test:2805@localhost/tim_proj'
+    # constants for recaptcha
+    app.config['RECAPTCHA_PUBLIC_KEY'] = '6LfDe1gkAAAAAJ1VpcKubUCtmHz2rMMYFO5i51Ng'
+    app.config['RECAPTCHA_PRIVATE_KEY'] = '6LfDe1gkAAAAAMlKVfQT1qcVJRhZLdlekY0CTCW2'
+    app.config['RECAPTCHA_OPTIONS'] = {'theme': 'black'}
+
 
     from .models import UserInfo, Post, Comment, Likes, db
 
