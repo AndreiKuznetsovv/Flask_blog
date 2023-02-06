@@ -128,6 +128,7 @@ def create_comment(post_id: int):
         text = request.form.get('text')
         # comment 123
         # another comment
+        # last comment
         if not text:
             flash('Comment cannot be empty', category='error')
             return redirect(url_for('.home'))
