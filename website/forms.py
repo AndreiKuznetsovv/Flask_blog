@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField, Recaptcha
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import (
     StringField, PasswordField,
@@ -32,6 +32,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
+    recaptcha = RecaptchaField(validators=[Recaptcha(message='You\'re not a robot... are you?')])
     submit = SubmitField('Sign Up')
 
 
@@ -41,7 +42,12 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password',
                              validators=[DataRequired()])
     remember = BooleanField('Remember me')
+    recaptcha = RecaptchaField(validators=[Recaptcha(message='You\'re not a robot... are you?')])
     submit = SubmitField('Login')
+
+    def validate_recaptha(self, recaptcha):
+        if not recaptcha.data:
+            raise ValidationError('Recaptcha is required')
 
     def validate_email(self, email):
         email_exists = UserInfo.query.filter_by(email=email.data).first()

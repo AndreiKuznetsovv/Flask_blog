@@ -67,12 +67,14 @@
             {% if category == "error" %}
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
             </div>
             {% else %}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="close" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
             </div>
             {% endif %}
             {% endfor %}
@@ -116,7 +118,8 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"
 ></script>
-
+<!-- recaptcha -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <!-- our JS file -->
 <script type="text/javascript"
         src="{{ url_for('static', filename='index.js') }}">
