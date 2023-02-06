@@ -1,4 +1,4 @@
-#!/home/dron/PycharmProjects/flaskProjects/tim_proj/venv/bin/python
+#!/home/dron/PycharmProjects/flaskProjects/flask_blog/venv/bin/python
 from website import create_app
 if __name__ == "__main__":
     app = create_app()

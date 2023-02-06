@@ -1,5 +1,6 @@
 import secrets
 import os
+import json
 from PIL import Image
 from flask import (
     Blueprint, render_template,
@@ -16,7 +17,7 @@ from .models import (
     db_delete_func,
     db_commit_func,
 )
-from .forms import PostForm, UpdateAccountForm, CommentForm
+from .forms import PostForm, UpdateAccountForm
 
 views = Blueprint("views", __name__)
 
@@ -126,9 +127,7 @@ def user_posts(username: str):
 def create_comment(post_id: int):
     if request.method == 'POST':
         text = request.form.get('text')
-        # comment 123
-        # another comment
-        # last comment
+
         if not text:
             flash('Comment cannot be empty', category='error')
             return redirect(url_for('.home'))
@@ -141,17 +140,6 @@ def create_comment(post_id: int):
                 flash('Post does not exist', category='error')
 
     return redirect(url_for('.home'))
-    # form = CommentForm()
-    #
-    # if form.validate_on_submit():
-    #     post = Post.query.filter_by(id=post_id).first()
-    #     if post:
-    #         comment = Comment(text=form.content, user_id=current_user.id, post_id=post_id)
-    #         db_add_func(comment)
-    #     else:
-    #         flash('POst does not exist', category='error')
-    #
-    # return render_template('home.html', form=form, user=current_user)
 
 
 # The view for deleting comment if current user are owner of the comment OR owner of the post
@@ -215,3 +203,18 @@ def edit_post(post_id: int):
             form.content.data = post.text
 
     return render_template('create_post.html', user=current_user, legend='Edit your post', form=form)
+
+
+@views.route('/create-many-posts', methods=['GET', 'POST'])
+@login_required
+def create_many_posts():
+    with open('data.json', 'r') as in_data:
+        json_data = json.load(in_data)
+
+    for post_data in json_data:
+        title = post_data['title']
+        content = post_data['content']
+        user_id = post_data['user_id']
+        new_post = Post(title=title, text=content, user_id=user_id)
+        db_add_func(new_post)
+    return redirect(url_for('.home'))

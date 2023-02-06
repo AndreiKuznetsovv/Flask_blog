@@ -76,8 +76,3 @@ class UpdateAccountForm(FlaskForm):
             username_exists = UserInfo.query.filter_by(username=username.data).first()
             if username_exists:
                 raise ValidationError((f'That username is taken. Please choose a different one.'))
-
-
-class CommentForm(FlaskForm):
-    content = TextAreaField('Comment', validators=[DataRequired()])
-    submit = SubmitField('Submit')

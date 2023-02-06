@@ -11,10 +11,12 @@
         <div class="card-header
             d-flex justify-content-between align-items-center"
         >
-            <img class="rounded-circle article-img"
-                 src="{{ url_for('static', filename='profile_pics/' + post.user_info.image) }}">
-            <a href="{{ url_for('views.user_posts', username=post.user_info.username) }}">
-                {{ post.user_info.username }}</a>
+            <div>
+                <img class="rounded-circle article-img"
+                     src="{{ url_for('static', filename='profile_pics/' + post.user_info.image) }}">
+                <a href="{{ url_for('views.user_posts', username=post.user_info.username) }}">
+                    {{ post.user_info.username }}</a></div>
+            <h2>{{ post.title }}</h2>
             <div>
                 {% if user.id in post.likes|map(attribute="user_id")|list %}
                 {% set icon_class = "fa-solid fa-thumbs-up" %}
@@ -129,11 +131,15 @@
     {% endfor %}
     <!-- ends of main cycle -->
 </div>
-{% for page_num in posts.iter_pages() %}
+{% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
 {% if page_num %}
-<a class="btn btn-outline-info mb-4" href="{{ url_for('.home', page=page_num) }}">{{ page_num }}</a>
+{% if posts.page == page_num %}
+<a class="btn btn-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
 {% else %}
-
+<a class="btn btn-outline-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
+{% endif %}
+{% else %}
+...
 {% endif %}
 {% endfor %}
 
