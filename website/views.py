@@ -83,25 +83,29 @@ def save_image(form_image):
 @login_required
 def profile():
     form = UpdateAccountForm()
+
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.email = form.email.data
+
         if form.image.data:
             # saving old user image filename to delete it
             old_image_filename = current_user.image
             image_filename = save_image(form.image.data)
             current_user.image = image_filename
+
             if db_commit_func():
                 # deleting old image if it's not default
                 if old_image_filename != 'default.png':
                     os.remove(os.path.join(views.root_path, 'static/profile_pics', old_image_filename))
                 flash('Account has been updated!', category='success')
                 return redirect(url_for('views.profile', username=current_user.username))
+
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    image_file = url_for('static', filename=f'profile_pics/{current_user.image}')
 
+    image_file = url_for('static', filename=f'profile_pics/{current_user.image}')
     return render_template("profile.html", user=current_user,
                            form=form, image=image_file)
 
@@ -200,6 +204,7 @@ def edit_post(post_id: int):
                 flash('Information Updated!', category='success')
                 return redirect(url_for('.home'))
         elif request.method == 'GET':
+            form.title.data = post.title
             form.content.data = post.text
 
     return render_template('create_post.html', user=current_user, legend='Edit your post', form=form)
@@ -218,3 +223,8 @@ def create_many_posts():
         new_post = Post(title=title, text=content, user_id=user_id)
         db_add_func(new_post)
     return redirect(url_for('.home'))
+
+
+@views.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
