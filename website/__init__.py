@@ -1,31 +1,29 @@
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+
+from config import DevelopmentConfig
 
 
 # error handler for 404
 def page_not_found(e):
     return render_template('error_404.html'), 404
 
-#error handler for 500
+
+# error handler for 500
 def internal_server_error(e):
     return render_template('error_500.html'), 500
 
-#error handler for 403
+
+# error handler for 403
 def forbidden_error(e):
     return render_template('error_403.html'), 403
+
 
 def create_app():
     # create an app
     app = Flask(__name__)
-    # config secret key and database uri
-    app.config['SECRET_KEY'] = "dc64a3eed4ff9c9f7ae9e22c8e597654" # got it from secrets.token_hex(16)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dron_test:2805@localhost/tim_proj'
-    # constants for recaptcha
-    app.config['RECAPTCHA_PUBLIC_KEY'] = '6LfDe1gkAAAAAJ1VpcKubUCtmHz2rMMYFO5i51Ng'
-    app.config['RECAPTCHA_PRIVATE_KEY'] = '6LfDe1gkAAAAAMlKVfQT1qcVJRhZLdlekY0CTCW2'
-    app.config['RECAPTCHA_OPTIONS'] = {'theme': 'black'}
-
+    # load config from config.py file
+    app.config.from_object(DevelopmentConfig)
 
     from .models import UserInfo, Post, Comment, Likes, db
 
@@ -33,12 +31,12 @@ def create_app():
 
     # import for handle errors
     from werkzeug.exceptions import NotFound, InternalServerError, Forbidden
-    #register error handlers
-    app.register_error_handler(NotFound, page_not_found) # status code 404
-    app.register_error_handler(InternalServerError, internal_server_error) # status code 500
-    app.register_error_handler(Forbidden, forbidden_error) # status code 403
+    # register error handlers
+    app.register_error_handler(NotFound, page_not_found)  # status code 404
+    app.register_error_handler(InternalServerError, internal_server_error)  # status code 500
+    app.register_error_handler(Forbidden, forbidden_error)  # status code 403
 
-    #imports for blueprints
+    # imports for blueprints
     from .views import views
     from .auth import auth
 
