@@ -1,15 +1,17 @@
-import secrets
-import os
-import json
-from PIL import Image
 from flask import (
     Blueprint, render_template,
     request, flash,
     redirect, url_for,
     jsonify, abort,
 )
-from flask_login import login_required, current_user
+from flask_login import (
+    login_required, current_user,
+)
 from sqlalchemy import exc
+import secrets
+import os
+import json
+from PIL import Image
 from .models import (
     UserInfo, Post,
     Comment, Likes,

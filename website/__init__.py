@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
-
-from config import DevelopmentConfig
+from flask_mail import Mail
 
 
 # error handler for 404
@@ -22,12 +21,16 @@ def forbidden_error(e):
 def create_app():
     # create an app
     app = Flask(__name__)
+
+    # import development config class
+    from config import DevelopmentConfig
     # load config from config.py file
     app.config.from_object(DevelopmentConfig)
 
-    from .models import UserInfo, Post, Comment, Likes, db
+    from .models import UserInfo, Post, Comment, Likes, db, mail
 
     db.init_app(app)  # initialize the database
+    mail.init_app(app)  # initialize the mail server
 
     # import for handle errors
     from werkzeug.exceptions import NotFound, InternalServerError, Forbidden

@@ -46,10 +46,10 @@ Login
         </div>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
+            <small class="text-muted ml-2">
+                <a href="{{ url_for('auth.reset_request', user=user) }}">Forgot Password?</a>
+            </small>
         </div>
-        <small class="text-muted ml-2">
-            <a href="#!">Forgot Password?</a>
-        </small>
     </form>
 </div>
 <div class="border-top pt-3">

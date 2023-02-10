@@ -20,6 +20,13 @@ class Config(object):
     RECAPTCHA_PRIVATE_KEY = '6LfDe1gkAAAAAMlKVfQT1qcVJRhZLdlekY0CTCW2'
     RECAPTCHA_OPTIONS = {'theme': 'black'}
 
+    # Mail
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587 # or 465 - for SSL or 25
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
+
 
 class ProductionConfig(Config):
     DEBUG = False

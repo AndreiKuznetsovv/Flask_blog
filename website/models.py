@@ -1,11 +1,23 @@
+from flask import flash
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import exc
-from flask_login import UserMixin
 from sqlalchemy.sql import func
-from flask import flash, url_for
+
+from flask_login import UserMixin
+
+from itsdangerous import URLSafeTimedSerializer as Serializer
+from itsdangerous.exc import SignatureExpired, BadTimeSignature
+
+from flask_mail import Mail
+
+from config import Config
 
 # db creation
 db = SQLAlchemy()
+
+# mail creation
+mail = Mail()
 
 
 # function for adding data to database
@@ -54,6 +66,20 @@ class UserInfo(db.Model, UserMixin):
     comments = db.relationship('Comment', backref='user_info', passive_deletes=True)
     # one-to-many relationship for users and likes
     likes = db.relationship('Likes', backref='user_info', passive_deletes=True)
+
+    # This token needs to make safe url for reset password
+    def get_reset_token(self):
+        s = Serializer(Config.SECRET_KEY)
+        return s.dumps({'user_id': self.id})
+
+    @staticmethod
+    def verify_reset_token(token, expires_sec=1800):
+        s = Serializer(Config.SECRET_KEY)
+        try:
+            user_id = s.loads(token, max_age=expires_sec)['user_id']
+        except (SignatureExpired, BadTimeSignature):
+            return None
+        return UserInfo.query.get(user_id)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
