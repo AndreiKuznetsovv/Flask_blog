@@ -9,7 +9,7 @@ notes
 # ignore json files
 *.json
 # ignore python byte-code
-__pycache__
+**/__pycache__/
 # ignore .log files
 *.log
 # ignore .idea
