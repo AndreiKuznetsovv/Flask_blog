@@ -1,3 +1,4 @@
+from flask_login import current_user
 from flask_wtf import (
     FlaskForm, RecaptchaField,
     Recaptcha,
@@ -8,32 +9,17 @@ from flask_wtf.file import (
 from wtforms import (
     StringField, PasswordField,
     SubmitField, BooleanField,
-    TextAreaField,
 )
 from wtforms.validators import (
     DataRequired, Length,
     Email, EqualTo, ValidationError,
 )
-from flask_login import current_user
-from .models import UserInfo
 
-
-# custom validations for check whether user and email exists or not
-def FieldAlreadyExist(form, field):
-    if field.name == 'username':
-        field_exists = UserInfo.query.filter_by(username=field.data).first()
-    else:
-        field_exists = UserInfo.query.filter_by(email=field.data).first()
-
-    if field_exists:
-        raise ValidationError(f'That {field.name.capitalize()} is taken. Please choose a different one.')
-
-
-def EmailNotExist(form, email):
-    email_exists = UserInfo.query.filter_by(email=email.data).first()
-
-    if not email_exists:
-        raise ValidationError('This email does\'t exist')
+from website.models import UserInfo
+from website.validators import (
+    FieldAlreadyExist,
+    EmailNotExist,
+)
 
 
 class RegistrationForm(FlaskForm):
@@ -60,12 +46,6 @@ class LoginForm(FlaskForm):
     def validate_recaptha(self, recaptcha):
         if not recaptcha.data:
             raise ValidationError('Recaptcha is required')
-
-
-class PostForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    content = TextAreaField('Text', validators=[DataRequired()])
-    submit = SubmitField('Post')
 
 
 class UpdateAccountForm(FlaskForm):

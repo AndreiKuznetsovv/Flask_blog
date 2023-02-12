@@ -1,7 +1,7 @@
 # ignore environment files
 .env
 # igonore notes file
-notes*
+notes
 # ignore profile pictures
 *.png
 !default.png
@@ -9,5 +9,7 @@ notes*
 # ignore json files
 *.json
 # ignore python byte-code
-*.pyc
+__pycache__
+# ignore .log files
+*.log
 

@@ -1,17 +1,11 @@
-from flask import flash
-
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc
-from sqlalchemy.sql import func
-
+from flask import flash, current_app
 from flask_login import UserMixin
-
+from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
-
-from flask_mail import Mail
-
-from config import Config
+from sqlalchemy import exc
+from sqlalchemy.sql import func
 
 # db creation
 db = SQLAlchemy()
@@ -69,12 +63,12 @@ class UserInfo(db.Model, UserMixin):
 
     # This token needs to make safe url for reset password
     def get_reset_token(self):
-        s = Serializer(Config.SECRET_KEY)
+        s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'user_id': self.id})
 
     @staticmethod
     def verify_reset_token(token, expires_sec=1800):
-        s = Serializer(Config.SECRET_KEY)
+        s = Serializer(current_app.config['SECRET_KEY'])
         try:
             user_id = s.loads(token, max_age=expires_sec)['user_id']
         except (SignatureExpired, BadTimeSignature):

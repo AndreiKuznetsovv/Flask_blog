@@ -1,21 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_login import LoginManager
-from flask_mail import Mail
-
-
-# error handler for 404
-def page_not_found(e):
-    return render_template('error_404.html'), 404
-
-
-# error handler for 500
-def internal_server_error(e):
-    return render_template('error_500.html'), 500
-
-
-# error handler for 403
-def forbidden_error(e):
-    return render_template('error_403.html'), 403
 
 
 def create_app():
@@ -23,7 +7,7 @@ def create_app():
     app = Flask(__name__)
 
     # import development config class
-    from config import DevelopmentConfig
+    from website.config import DevelopmentConfig
     # load config from config.py file
     app.config.from_object(DevelopmentConfig)
 
@@ -32,20 +16,17 @@ def create_app():
     db.init_app(app)  # initialize the database
     mail.init_app(app)  # initialize the mail server
 
-    # import for handle errors
-    from werkzeug.exceptions import NotFound, InternalServerError, Forbidden
-    # register error handlers
-    app.register_error_handler(NotFound, page_not_found)  # status code 404
-    app.register_error_handler(InternalServerError, internal_server_error)  # status code 500
-    app.register_error_handler(Forbidden, forbidden_error)  # status code 403
-
     # imports for blueprints
-    from .views import views
-    from .auth import auth
+    from .main.views import main
+    from .posts.views import posts
+    from .users.views import users
+    from .errors.handlers import errors
 
-    app.register_blueprint(views,
+    app.register_blueprint(main,
                            url_prefix="/")  # url_prefix if you need this route /prefix/home for /home in views (just example)
-    app.register_blueprint(auth, url_prefix="/")
+    app.register_blueprint(posts, url_prefix="/")
+    app.register_blueprint(users, url_prefix="/")
+    app.register_blueprint(errors, url_prefix="/")
 
     # use this to create tables
     # def test_connection():
@@ -56,7 +37,7 @@ def create_app():
     # creating login manager
     login_manager = LoginManager()
     # for redirection users to auth view
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "users.login"
     # init login manager
     login_manager.init_app(app)
 

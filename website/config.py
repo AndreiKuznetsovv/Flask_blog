@@ -1,11 +1,12 @@
 from os import path, environ
+
 from dotenv import load_dotenv
 
 """Flask configuration."""
 
 basedir = path.abspath(path.dirname(__file__))
-# load dotenv from '/home/dron/PycharmProjects/flaskProjects/flask_blog/.env' in our case
-load_dotenv(path.join(basedir, '.env'))
+# load dotenv from '/home/dron/PycharmProjects/flaskProjects/flask_blog/.env'
+load_dotenv(path.join(basedir, '../.env'))
 
 
 class Config(object):
@@ -13,7 +14,7 @@ class Config(object):
     SECRET_KEY = environ.get('SECRET_KEY')
 
     # Database
-    SQLALCHEMY_DATABASE_URI = 'postgresql://dron_test:2805@localhost/tim_proj'
+    SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
 
     # Recaptcha
     RECAPTCHA_PUBLIC_KEY = '6LfDe1gkAAAAAJ1VpcKubUCtmHz2rMMYFO5i51Ng'
@@ -22,7 +23,7 @@ class Config(object):
 
     # Mail
     MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587 # or 465 - for SSL or 25
+    MAIL_PORT = 587  # or 465 - for SSL or 25
     MAIL_USE_TLS = True
     MAIL_USERNAME = environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
