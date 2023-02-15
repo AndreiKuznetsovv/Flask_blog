@@ -1,17 +1,28 @@
 from flask import flash, current_app
-from flask_login import UserMixin
+from flask_login import LoginManager, UserMixin
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
 from sqlalchemy import exc
 from sqlalchemy.sql import func
+from flask_migrate import Migrate
 
 # db creation
 db = SQLAlchemy()
-
 # mail creation
 mail = Mail()
+# Migrate creation
+migrate = Migrate()
+# creating login manager
+login_manager = LoginManager()
+login_manager.login_view = "users.login"
+
+
+@login_manager.user_loader
+def load_user(id):
+    # get id from session,then retrieve user object from database with peewee query
+    return UserInfo.query.get(int(id))
 
 
 # function for adding data to database

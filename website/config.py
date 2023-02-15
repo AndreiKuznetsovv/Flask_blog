@@ -18,7 +18,7 @@ class Config(object):
 
     # Recaptcha
     RECAPTCHA_PUBLIC_KEY = '6LfDe1gkAAAAAJ1VpcKubUCtmHz2rMMYFO5i51Ng'
-    RECAPTCHA_PRIVATE_KEY = '6LfDe1gkAAAAAMlKVfQT1qcVJRhZLdlekY0CTCW2'
+    RECAPTCHA_PRIVATE_KEY = environ.get('RECAPTCHA_PRIVATE_KEY')
     RECAPTCHA_OPTIONS = {'theme': 'black'}
 
     # Mail
@@ -27,6 +27,11 @@ class Config(object):
     MAIL_USE_TLS = True
     MAIL_USERNAME = environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
+
+    # OAuth (NOT IMPLEMENTED RIGHT NOW)
+    GOOGLE_CLIENT_ID = environ.get('CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = environ.get('CLIENT_SECRET')
+    OAUTHLIB_INSECURE_TRANSPORT = "1"
 
 
 class ProductionConfig(Config):

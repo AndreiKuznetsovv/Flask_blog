@@ -152,3 +152,13 @@ def like(post_id: int):
         except exc.SQLAlchemyError:
             flash('An database error occurred during creation', category='error')
     return jsonify({"likes": len(post.likes), "liked": current_user.id in map(lambda x: x.user_id, post.likes)})
+
+
+@login_required
+@posts.route('/top-rated-posts', methods=['GET'])
+def top_rated_posts():
+    page = request.args.get('page', default=1, type=int)
+    # posts = Post.query.filter_by(user_id=user.id) \
+    #     .order_by(Post.likes.desc()) \
+    #     .paginate(page=page, per_page=5)
+    return render_template('top_rated_posts.html', posts=posts)
