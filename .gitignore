@@ -5,6 +5,7 @@ notes
 # ignore profile pictures
 *.png
 !default.png
+!flask_github.png
 *.jpg
 # ignore json files
 *.json
