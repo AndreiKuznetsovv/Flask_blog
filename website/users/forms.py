@@ -15,7 +15,7 @@ from wtforms.validators import (
     Email, EqualTo, ValidationError,
 )
 
-from website.models import UserInfo
+from website.models import User
 from website.validators import (
     FieldAlreadyExist,
     EmailNotExist,
@@ -59,13 +59,13 @@ class UpdateAccountForm(FlaskForm):
 
     def update_account_email(self, email):
         if current_user.email != email.data:
-            email_exists = UserInfo.query.filter_by(email=email.data).first()
+            email_exists = User.query.filter_by(email=email.data).first()
             if email_exists:
                 raise ValidationError(f'That email is taken. Please choose a different one.')
 
     def update_account_username(self, username):
         if current_user.username != username.data:
-            username_exists = UserInfo.query.filter_by(username=username.data).first()
+            username_exists = User.query.filter_by(username=username.data).first()
             if username_exists:
                 raise ValidationError((f'That username is taken. Please choose a different one.'))
 

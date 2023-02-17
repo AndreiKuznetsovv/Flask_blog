@@ -11,8 +11,8 @@ def create_app():
     app.config.from_object(DevelopmentConfig)
 
     from .models import (
-        UserInfo, Post,
-        Comment, Likes,
+        User, Post,
+        Comment, Like,
         db, mail,
         login_manager, migrate,
     )
@@ -33,11 +33,5 @@ def create_app():
     app.register_blueprint(posts, url_prefix="/")
     app.register_blueprint(users, url_prefix="/")
     app.register_blueprint(errors, url_prefix="/")
-
-    # use this to create tables
-    # def test_connection():
-    #     with app.app_context():
-    #         db.create_all()
-    # test_connection()
 
     return app

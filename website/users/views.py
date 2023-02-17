@@ -15,7 +15,7 @@ from werkzeug.security import (
 )
 
 from website.models import (
-    UserInfo, db_add_func,
+    User, db_add_func,
     db_commit_func, Post,
 )
 from website.utils import save_image, send_reset_email
@@ -62,7 +62,7 @@ def profile():
 @users.route("/posts/<string:username>")
 def user_posts(username: str):
     # check if the requested user exists
-    user = UserInfo.query.filter_by(username=username).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', default=1, type=int)
     posts = Post.query.filter_by(user_id=user.id) \
         .order_by(Post.date_created.desc()) \
@@ -81,7 +81,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = UserInfo.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if check_password_hash(user.password, form.password.data):
             flash('Logged in!', category='success')
             login_user(user, remember=form.remember.data)
@@ -100,8 +100,8 @@ def sign_up():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = UserInfo(username=form.username.data,
-                            email=form.email.data, password=hashed_password)
+        new_user = User(username=form.username.data,
+                        email=form.email.data, password=hashed_password)
 
         if db_add_func(new_user):
             flash('Account created!', category='success')
@@ -128,7 +128,7 @@ def reset_request():
 
     form = RequestResetForm()
     if form.validate_on_submit():
-        user = UserInfo.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
         flash('An email has been sent with instruction to reset your password', category='success')
         return redirect(url_for('.login'))
@@ -141,7 +141,7 @@ def reset_request():
 def reset_token(token: str):
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
-    user = UserInfo.verify_reset_token(token)
+    user = User.verify_reset_token(token)
 
     if not user:
         flash('That is token is invalid or expired!', category='error')
@@ -158,3 +158,8 @@ def reset_token(token: str):
 
     return render_template('users/reset_token.html',
                            title='Reset Password', form=form, user=current_user)
+
+
+@users.route('/login/callback', methods=['GET', 'POST'])
+def callback():
+    pass

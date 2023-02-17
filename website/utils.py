@@ -5,7 +5,7 @@ from PIL import Image
 from flask import url_for, current_app
 from flask_mail import Message
 
-from website.models import UserInfo, mail
+from website.models import User, mail
 
 
 def save_image(form_image):
@@ -24,7 +24,7 @@ def save_image(form_image):
     return image_filename
 
 
-def send_reset_email(user: UserInfo):
+def send_reset_email(user: User):
     token = user.get_reset_token()
     msg = Message('Password Reset Request',
                   sender='noreply@demo.com', recipients=[user.email])

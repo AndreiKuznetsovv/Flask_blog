@@ -15,7 +15,7 @@ from sqlalchemy import exc
 from website.models import (
     Post, db_add_func,
     db_delete_func, db_commit_func,
-    db, Likes,
+    db, Like,
     Comment,
 )
 from .forms import PostForm
@@ -134,7 +134,7 @@ def delete_comment(comment_id: int):
 @login_required
 def like(post_id: int):
     post = Post.query.filter_by(id=post_id).first()
-    like = Likes.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+    like = Like.query.filter_by(user_id=current_user.id, post_id=post.id).first()
 
     if not post:
         return jsonify({'error': 'Post does not exist'}, 400)
@@ -145,7 +145,7 @@ def like(post_id: int):
         except exc.SQLAlchemyError:
             flash('An database error occurred during deletion', category='error')
     else:
-        new_like = Likes(user_id=current_user.id, post_id=post_id)
+        new_like = Like(user_id=current_user.id, post_id=post_id)
         try:
             db.session.add(new_like)
             db.session.commit()
@@ -154,11 +154,13 @@ def like(post_id: int):
     return jsonify({"likes": len(post.likes), "liked": current_user.id in map(lambda x: x.user_id, post.likes)})
 
 
-@login_required
-@posts.route('/top-rated-posts', methods=['GET'])
-def top_rated_posts():
-    page = request.args.get('page', default=1, type=int)
-    # posts = Post.query.filter_by(user_id=user.id) \
-    #     .order_by(Post.likes.desc()) \
-    #     .paginate(page=page, per_page=5)
-    return render_template('top_rated_posts.html', posts=posts)
+# @login_required
+# @posts.route('/top-rated-posts', methods=['GET'])
+# def top_rated_posts():
+#     page = request.args.get('page', default=1, type=int)
+#     posts = Post.query. \
+#         .order_by(Post.likes.desc()) \
+#         .limit(10) \
+#         .paginate(page=page, per_page=5)
+#
+#     return render_template('top_rated_posts.html', posts=posts)

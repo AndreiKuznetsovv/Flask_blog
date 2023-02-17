@@ -6,6 +6,7 @@ notes
 *.png
 !default.png
 !flask_github.png
+!site_images
 *.jpg
 # ignore json files
 *.json

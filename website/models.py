@@ -1,12 +1,12 @@
 from flask import flash, current_app
 from flask_login import LoginManager, UserMixin
 from flask_mail import Mail
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from itsdangerous.exc import SignatureExpired, BadTimeSignature
 from sqlalchemy import exc
 from sqlalchemy.sql import func
-from flask_migrate import Migrate
 
 # db creation
 db = SQLAlchemy()
@@ -22,7 +22,7 @@ login_manager.login_view = "users.login"
 @login_manager.user_loader
 def load_user(id):
     # get id from session,then retrieve user object from database with peewee query
-    return UserInfo.query.get(int(id))
+    return User.query.get(int(id))
 
 
 # function for adding data to database
@@ -58,7 +58,9 @@ def db_commit_func():
 
 
 # table for users
-class UserInfo(db.Model, UserMixin):
+class User(db.Model, UserMixin):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
@@ -66,11 +68,11 @@ class UserInfo(db.Model, UserMixin):
     image = db.Column(db.String(20), nullable=False, default='default.png')  # users profile image
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())  # func.now gives as the current time
     # one-to-many relationship for users and posts
-    posts = db.relationship('Post', backref='user_info', passive_deletes=True, lazy=True)
+    posts = db.relationship('Post', backref='author', passive_deletes=True, lazy=True)
     # one-to-many relationship for users and comments
-    comments = db.relationship('Comment', backref='user_info', passive_deletes=True)
+    comments = db.relationship('Comment', backref='author', passive_deletes=True)
     # one-to-many relationship for users and likes
-    likes = db.relationship('Likes', backref='user_info', passive_deletes=True)
+    likes = db.relationship('Like', backref='author', passive_deletes=True)
 
     # This token needs to make safe url for reset password
     def get_reset_token(self):
@@ -84,7 +86,7 @@ class UserInfo(db.Model, UserMixin):
             user_id = s.loads(token, max_age=expires_sec)['user_id']
         except (SignatureExpired, BadTimeSignature):
             return None
-        return UserInfo.query.get(user_id)
+        return User.query.get(user_id)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -92,17 +94,19 @@ class UserInfo(db.Model, UserMixin):
 
 # table for posts
 class Post(db.Model):
+    __tablename__ = 'posts'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     text = db.Column(db.Text, nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    # foreign key to table UserInfo (user_info in postgres)
+    # foreign key to table UserInfo (users in postgres)
     user_id = db.Column(db.Integer, db.ForeignKey(
-        'user_info.id', ondelete="CASCADE"), nullable=False)
+        'users.id', ondelete="CASCADE"), nullable=False)
     # one-to-many relationship for posts and comments
-    comments = db.relationship('Comment', backref='post', passive_deletes=True)
+    comments = db.relationship('Comment', backref='posts', passive_deletes=True)
     # one-to-many relationship for posts and likes
-    likes = db.relationship('Likes', backref='post', passive_deletes=True)
+    likes = db.relationship('Like', backref='posts', passive_deletes=True)
 
     def __repr__(self):
         return f"Post('{self.id}', '{self.user_id}')"
@@ -110,30 +114,35 @@ class Post(db.Model):
 
 # table for comments
 class Comment(db.Model):
+    __tablename__ = 'comments'
+
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    # foreign key to table UserInfo (user_info in postgres)
+    test_column = db.Column(db.DateTime)
+    # foreign key to table User (users in postgres)
     user_id = db.Column(db.Integer, db.ForeignKey(
-        'user_info.id', ondelete="CASCADE"), nullable=False)
-    # foreign key to table Post (post in postgres)
+        'users.id', ondelete="CASCADE"), nullable=False)
+    # foreign key to table Post (posts in postgres)
     post_id = db.Column(db.Integer, db.ForeignKey(
-        'post.id', ondelete="CASCADE"), nullable=False)
+        'posts.id', ondelete="CASCADE"), nullable=False)
 
     def __repr__(self):
         return '<Post %r>' % self.id
 
 
 # table for likes
-class Likes(db.Model):
+class Like(db.Model):
+    __tablename__ = 'likes'
+
     id = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    # foreign key to table UserInfo (user_info in postgres)
+    # foreign key to table UserInfo (users in postgres)
     user_id = db.Column(db.Integer, db.ForeignKey(
-        'user_info.id', ondelete='CASCADE'), nullable=False)
-    # foreign key to table Post (post in postgres)
+        'users.id', ondelete='CASCADE'), nullable=False)
+    # foreign key to table Post (posts in postgres)
     post_id = db.Column(db.Integer, db.ForeignKey(
-        'post.id', ondelete='CASCADE'), nullable=False)
+        'posts.id', ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
         return '<Post %r>' % self.id

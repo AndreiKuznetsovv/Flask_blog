@@ -5,12 +5,12 @@
 {% for post in posts.items %}
 <article class="media content-section">
     <img class="rounded-circle article-img"
-         src="{{ url_for('static', filename='profile_pics/' + post.user_info.image) }}">
+         src="{{ url_for('static', filename='profile_pics/' + post.author.image) }}">
     <div class="media-body border-dark">
         <div class="article-metadata d-flex justify-content-between">
             <div>
-                <a class="text-info mr-2" href="{{ url_for('users.user_posts', username=post.user_info.username) }}">{{
-                    post.user_info.username }}</a>
+                <a class="text-info mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{
+                    post.author.username }}</a>
                 <small class="text-muted">{{ post.date_created.strftime('%Y-%m-%d in %H:%M') }}</small>
             </div>
             <div>
@@ -80,8 +80,8 @@
                         {% for comment in post.comments %}
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <a class="text-info" href="{{ url_for('users.user_posts', username=comment.user_info.username) }}">
-                                    {{ comment.user_info.username }}</a>: {{ comment.text }}
+                                <a class="text-info" href="{{ url_for('users.user_posts', username=comment.author.username) }}">
+                                    {{ comment.author.username }}</a>: {{ comment.text }}
                             </div>
                             <div>
                                 <small class="text-muted">{{ comment.date_created.strftime('%Y-%m-%d in %H:%M')
