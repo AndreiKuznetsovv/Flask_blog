@@ -8,8 +8,7 @@ from flask_mail import Message
 from website.models import User, mail
 
 
-def save_image(form_image):
-    # creating a random hex value for image name
+def save_image(form_image):    # creating a random hex value for image name
     random_hex = secrets.token_hex(8)
     # get the filename and the extension of the user image
     _, f_ext = os.path.splitext(form_image.filename)

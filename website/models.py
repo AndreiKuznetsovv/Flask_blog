@@ -109,7 +109,7 @@ class Post(db.Model):
     likes = db.relationship('Like', backref='posts', passive_deletes=True)
 
     def __repr__(self):
-        return f"Post('{self.id}', '{self.user_id}')"
+        return f"Post('{self.id}', '{self.user_id}', {self.title})"
 
 
 # table for comments
@@ -119,7 +119,6 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    test_column = db.Column(db.DateTime)
     # foreign key to table User (users in postgres)
     user_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete="CASCADE"), nullable=False)

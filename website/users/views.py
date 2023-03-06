@@ -46,7 +46,10 @@ def profile():
             if db_commit_func():
                 # deleting old image if it's not default
                 if old_image_filename != 'default.png':
-                    os.remove(os.path.join(current_app.root_path, 'static/profile_pics', old_image_filename))
+                    try:
+                        os.remove(os.path.join(current_app.root_path, 'static/profile_pics', old_image_filename))
+                    except OSError:
+                        pass
                 flash('Account has been updated!', category='success')
                 return redirect(url_for('users.profile', username=current_user.username))
 
@@ -54,7 +57,8 @@ def profile():
         form.username.data = current_user.username
         form.email.data = current_user.email
 
-    image_file = url_for('static', filename=f'profile_pics/{current_user.image}')
+    image_file = url_for('static', filename=f'profile_pics/{current_user.image}') or\
+                 url_for('static', filename=f'profile_pics/default.png') # default.png if image not found for any reason
     return render_template("users/profile.html", user=current_user,
                            form=form, image=image_file)
 

@@ -5,7 +5,7 @@
 {% for post in posts.items %}
 <article class="media content-section">
     <img class="rounded-circle article-img"
-         src="{{ url_for('static', filename='profile_pics/' + post.author.image) }}">
+         src="{{ url_for('static', filename='profile_pics/' + (post.author.image or 'default.png' )) }}">
     <div class="media-body border-dark">
         <div class="article-metadata d-flex justify-content-between">
             <div>
