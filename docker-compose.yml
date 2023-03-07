@@ -1,0 +1,25 @@
+services:
+        flask_blog:
+                build: .
+                ports:
+                        - "8080:8080"
+                volumes:
+                        - pictures:/flask_blog/website/static/profile_pics
+                networks:
+                        - flask_blog_network
+                container_name: flask_blog
+        PostgreSQL:
+                image: postgres
+                ports:
+                  - "5432:5432"
+                environment:
+                        POSTGRES_USER: flask_user
+                        POSTGRES_DB: flask_blog
+                        POSTGRES_PASSWORD: 2805
+                networks:
+                        flask_blog_network:
+                                aliases:
+                                        - dbserver
+                container_name: PostgreSQL
+volumes:
+        pictures:
